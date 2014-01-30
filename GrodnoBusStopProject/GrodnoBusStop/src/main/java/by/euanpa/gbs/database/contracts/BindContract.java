@@ -25,6 +25,7 @@ public class BindContract {
         public static final String BIND_ID = _ID;
         public static final String BIND_ROUTE_ID = "ROUTE_ID";
         public static final String BIND_BUS_STOP_ID = "BUS_STOP_ID";
+        public static final String BIND_NEXT_BUS_STOP_ID = "NEXT_BUS_STOP_ID";
 
 
 

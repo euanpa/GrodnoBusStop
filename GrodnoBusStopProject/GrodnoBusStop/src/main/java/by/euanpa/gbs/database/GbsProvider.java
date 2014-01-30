@@ -80,21 +80,21 @@ public class GbsProvider extends ContentProvider {
 
                 _uri = ContentUris.withAppendedId(
                         RouteContract.RouteColumns.ROUTE_URI, id);
-                getContext().getContentResolver().notifyChange(_uri, null);
+                //getContext().getContentResolver().notifyChange(_uri, null);
 
             case BUS_STOP_INDEX:
                 id = dbHelper.addBusStop(values);
 
                 _uri = ContentUris.withAppendedId(
                         BusStopContract.BusStopColumns.BUS_STOP_URI, id);
-                getContext().getContentResolver().notifyChange(_uri, null);
+                //getContext().getContentResolver().notifyChange(_uri, null);
 
             case TIME_INDEX:
                 id = dbHelper.addTime(values);
 
                 _uri = ContentUris.withAppendedId(
                         TimeContract.TimeColumns.TIME_URI, id);
-                getContext().getContentResolver().notifyChange(_uri, null);
+                //getContext().getContentResolver().notifyChange(_uri, null);
 
             case BIND_INDEX:
 
@@ -102,7 +102,7 @@ public class GbsProvider extends ContentProvider {
 
                 _uri = ContentUris.withAppendedId(
                         BindContract.BindColumns.BIND_URI, id);
-                getContext().getContentResolver().notifyChange(_uri, null);
+                //getContext().getContentResolver().notifyChange(_uri, null);
                 break;
             default:
                 throw new SQLException("Failed to insert row into " + uri);
@@ -114,7 +114,7 @@ public class GbsProvider extends ContentProvider {
     public int bulkInsert(Uri uri, ContentValues[] values) {
         Log.i(TAG, "bulk insert (Provider checked) " + values[0]);
         DbHelper.bulkInsertTime(dbHelper, values);
-        getContext().getContentResolver().notifyChange(uri, null);
+        //getContext().getContentResolver().notifyChange(uri, null);
         return values.length;
 
     }
@@ -134,9 +134,19 @@ public class GbsProvider extends ContentProvider {
         Cursor cursor = null;
         switch (sURIMatcher.match(uri)) {
             case ROUTE_INDEX:
-               //cursor = dbHelper.getTweets(projection,selection,
-               //       selectionArgs, sortOrder);
+               cursor = dbHelper.getRoutes(projection,selection,
+                      selectionArgs, sortOrder);
                // cursor.setNotificationUri(getContext().getContentResolver(), uri);
+                break;
+            case BUS_STOP_INDEX:
+                cursor = dbHelper.getBusStops(projection,selection,
+                       selectionArgs, sortOrder);
+                // cursor.setNotificationUri(getContext().getContentResolver(), uri);
+                break;
+            case TIME_INDEX:
+                cursor = dbHelper.getTimes(projection,selection,
+                        selectionArgs, sortOrder);
+                // cursor.setNotificationUri(getContext().getContentResolver(), uri);
                 break;
 
             default:

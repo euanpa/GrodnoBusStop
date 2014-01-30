@@ -2,6 +2,7 @@ package by.euanpa.gbs.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -85,6 +86,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String CREATE_BIND_TABLE = "CREATE TABLE " + BIND + " (" + BIND_COLUMNS[ONE_INDEX]
             + " INTEGER PRIMARY KEY, " + BIND_COLUMNS[TWO_INDEX]
             + " INTEGER, " + BIND_COLUMNS[THREE_INDEX]
+            + " INTEGER, " + BIND_COLUMNS[FOUR_INDEX]
             + " INTEGER);";
 
 
@@ -159,6 +161,30 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         Log.i(TAG, values.toString());
         return db.insert(BIND, null, values);
+    }
+
+    public Cursor getTimes(String[] projection, String selection,
+                            String[] selectionArgs, String sortOrder){
+        SQLiteDatabase db = getWritableDatabase();
+        String sql = "";
+        Cursor cursor = db.rawQuery(sql,selectionArgs);
+        return cursor;
+    }
+
+    public Cursor getRoutes(String[] projection, String selection,
+                            String[] selectionArgs, String sortOrder){
+        SQLiteDatabase db = getWritableDatabase();
+        String sql = "";
+        Cursor cursor = db.rawQuery(sql,selectionArgs);
+        return cursor;
+    }
+
+    public Cursor getBusStops(String[] projection, String selection,
+                              String[] selectionArgs, String sortOrder){
+        SQLiteDatabase db = getWritableDatabase();
+        String sql = "";
+        Cursor cursor = db.rawQuery(sql,selectionArgs);
+        return cursor;
     }
 
     public static void bulkInsertTime(DbHelper dbHelper, ContentValues[] values) {
