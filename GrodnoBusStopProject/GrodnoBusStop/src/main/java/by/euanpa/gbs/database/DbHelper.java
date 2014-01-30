@@ -2,10 +2,14 @@ package by.euanpa.gbs.database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import by.euanpa.gbs.database.contracts.BindContract;
+import by.euanpa.gbs.database.contracts.BusStopContract;
+import by.euanpa.gbs.database.contracts.RouteContract;
+import by.euanpa.gbs.database.contracts.TimeContract;
 
 /**
  * Created by google on 30.01.14.
@@ -19,21 +23,21 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String BIND = "BIND";
 
     public static final String[] ROUTE_COLUMNS = {
-            Contract.GbsColumns.ROUTE_ID, Contract.GbsColumns.NUMBER_ROUTE,
-            Contract.GbsColumns.NAME_ROUTE};
+            RouteContract.RouteColumns.ROUTE_ID, RouteContract.RouteColumns.NUMBER_ROUTE,
+            RouteContract.RouteColumns.NAME_ROUTE};
 
     public static final String[] BUS_STOP_COLUMNS = {
-            Contract.GbsColumns.BUS_STOP_ID, Contract.GbsColumns.BUS_STOP_NAME,
-            Contract.GbsColumns.LATITUDE, Contract.GbsColumns.LONGITUDE};
+            BusStopContract.BusStopColumns.BUS_STOP_ID, BusStopContract.BusStopColumns.BUS_STOP_NAME,
+            BusStopContract.BusStopColumns.LATITUDE, BusStopContract.BusStopColumns.LONGITUDE};
 
     public static final String[] TIME_COLUMNS = {
-            Contract.GbsColumns.TIME_ID, Contract.GbsColumns.HOUR,
-            Contract.GbsColumns.MINUTE, Contract.GbsColumns.DAY_TYPE,
-            Contract.GbsColumns.BS_PLUS_ROUTE};
+            TimeContract.TimeColumns.TIME_ID, TimeContract.TimeColumns.HOUR,
+            TimeContract.TimeColumns.MINUTE, TimeContract.TimeColumns.DAY_TYPE,
+            TimeContract.TimeColumns.TIME_ID};
 
     public static final String[] BIND_COLUMNS = {
-            Contract.GbsColumns.BIND_ID, Contract.GbsColumns.BIND_ROUTE_ID,
-            Contract.GbsColumns.BIND_BUS_STOP_ID};
+            BindContract.BindColumns.BIND_ID, BindContract.BindColumns.BIND_ROUTE_ID,
+            BindContract.BindColumns.BIND_BUS_STOP_ID};
 
     public static final int ONE_INDEX = 0;
     public static final int TWO_INDEX = 1;
