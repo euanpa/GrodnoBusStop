@@ -24,4 +24,9 @@
         </activity>
     </application>
 
+    <provider
+        android:name="by.euanpa.gbs.database.GbsProvider"
+        android:authorities="by.euanpa.gbs.database.GbsProvider"
+        android:exported="false"/>
+
 </manifest>
