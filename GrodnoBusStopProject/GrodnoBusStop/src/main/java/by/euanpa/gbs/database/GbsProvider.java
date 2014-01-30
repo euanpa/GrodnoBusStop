@@ -9,6 +9,11 @@ import android.database.SQLException;
 import android.net.Uri;
 import android.util.Log;
 
+import by.euanpa.gbs.database.contracts.BindContract;
+import by.euanpa.gbs.database.contracts.BusStopContract;
+import by.euanpa.gbs.database.contracts.RouteContract;
+import by.euanpa.gbs.database.contracts.TimeContract;
+
 
 /**
  * Created by google on 30.01.14.
@@ -31,14 +36,14 @@ public class GbsProvider extends ContentProvider {
 
     static {
 
-        sURIMatcher.addURI(Contract.AUTHORITY,
-                Contract.GbsColumns.ROUTE_PATH, ROUTE_INDEX);
-        sURIMatcher.addURI(Contract.AUTHORITY,
-                Contract.GbsColumns.BUS_STOP_PATH, BUS_STOP_INDEX);
-        sURIMatcher.addURI(Contract.AUTHORITY,
-                Contract.GbsColumns.TIME_PATH, TIME_INDEX);
-        sURIMatcher.addURI(Contract.AUTHORITY,
-                Contract.GbsColumns.ROUTE_PATH, BIND_INDEX);
+        sURIMatcher.addURI(RouteContract.AUTHORITY,
+                RouteContract.RouteColumns.ROUTE_PATH, ROUTE_INDEX);
+        sURIMatcher.addURI(BusStopContract.AUTHORITY,
+                BusStopContract.BusStopColumns.BUS_STOP_PATH, BUS_STOP_INDEX);
+        sURIMatcher.addURI(TimeContract.AUTHORITY,
+                TimeContract.TimeColumns.TIME_PATH, TIME_INDEX);
+        sURIMatcher.addURI(BindContract.AUTHORITY,
+                BindContract.BindColumns.BIND_PATH, BIND_INDEX);
 
 
     }
@@ -51,9 +56,13 @@ public class GbsProvider extends ContentProvider {
     public String getType(Uri uri) {
         switch (sURIMatcher.match(uri)) {
             case ROUTE_INDEX:
-                return Contract.GbsColumns.ROUTE_TYPE;
+                return RouteContract.RouteColumns.ROUTE_TYPE;
             case BUS_STOP_INDEX:
-                return Contract.GbsColumns.BUS_STOP_TYPE;
+                return BusStopContract.BusStopColumns.BUS_STOP_TYPE;
+            case TIME_INDEX:
+                return TimeContract.TimeColumns.TIME_TYPE;
+            case BIND_INDEX:
+                return BindContract.BindColumns.BIND_TYPE;
 
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
@@ -70,21 +79,21 @@ public class GbsProvider extends ContentProvider {
                 id = dbHelper.addRoute(values);
 
                 _uri = ContentUris.withAppendedId(
-                        Contract.GbsColumns.ROUTE_URI, id);
+                        RouteContract.RouteColumns.ROUTE_URI, id);
                 getContext().getContentResolver().notifyChange(_uri, null);
 
             case BUS_STOP_INDEX:
                 id = dbHelper.addBusStop(values);
 
                 _uri = ContentUris.withAppendedId(
-                        Contract.GbsColumns.ROUTE_URI, id);
+                        BusStopContract.BusStopColumns.BUS_STOP_URI, id);
                 getContext().getContentResolver().notifyChange(_uri, null);
 
             case TIME_INDEX:
                 id = dbHelper.addTime(values);
 
                 _uri = ContentUris.withAppendedId(
-                        Contract.GbsColumns.ROUTE_URI, id);
+                        TimeContract.TimeColumns.TIME_URI, id);
                 getContext().getContentResolver().notifyChange(_uri, null);
 
             case BIND_INDEX:
@@ -92,7 +101,7 @@ public class GbsProvider extends ContentProvider {
                 id = dbHelper.addBind(values);
 
                 _uri = ContentUris.withAppendedId(
-                        Contract.GbsColumns.ROUTE_URI, id);
+                        BindContract.BindColumns.BIND_URI, id);
                 getContext().getContentResolver().notifyChange(_uri, null);
                 break;
             default:
