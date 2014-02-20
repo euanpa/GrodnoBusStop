@@ -1,65 +1,156 @@
 package by.euanpa.gbs;
 
-import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 
-public class MainActivity extends Activity {
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import by.euanpa.gbs.database.DbHelper;
+import by.euanpa.gbs.database.contracts.BindContract;
+import by.euanpa.gbs.database.contracts.BusStopContract;
+import by.euanpa.gbs.database.contracts.RouteContract;
+import by.euanpa.gbs.database.contracts.TimeContract;
+import by.euanpa.gbs.fragments.BusStopFragment;
+import by.euanpa.gbs.fragments.SlideMenuFragment;
+import by.euanpa.gbs.tasks.UploadBind;
+import by.euanpa.gbs.tasks.UploadBusStops;
+import by.euanpa.gbs.tasks.UploadRoutes;
+import by.euanpa.gbs.utility.slidingmenu.SlidingFragmentActivity;
+import by.euanpa.gbs.utility.slidingmenu.SlidingMenu;
+
+public class MainActivity extends SlidingFragmentActivity {
+
+    private Fragment mContent;
+    protected ListFragment mFrag;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        // set the Above View
+        ContextHolder.getInstance().setContext(getApplicationContext()); //change this
+                if (savedInstanceState != null)
+            mContent = getSupportFragmentManager().getFragment(savedInstanceState, "mContent");
+        if (mContent == null)
+            mContent = new BusStopFragment();
 
+        // set the Above View
+        setContentView(R.layout.content_frame);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, mContent)
+                .commit();
+
+        // set the Behind View
+        setBehindContentView(R.layout.menu_frame);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.menu_frame, new SlideMenuFragment())
+                .commit();
+
+        // customize the SlidingMenu
+
+        getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+
+        setBehindContentView(R.layout.menu_frame);
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
+
+            mFrag = (ListFragment)this.getSupportFragmentManager().findFragmentById(R.id.menu_frame);
         }
+
+        // customize the SlidingMenu
+        SlidingMenu sm = getSlidingMenu();
+        sm.setShadowWidthRes(R.dimen.shadow_width);
+        sm.setShadowDrawable(R.drawable.shadow);
+        sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+        sm.setFadeDegree(0.35f);
+        sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, "mContent", mContent);
+    }
+
+    public void switchContent(Fragment fragment) {
+        mContent = fragment;
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .commit();
+        getSlidingMenu().showContent();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.drop:
+
+                return true;
+            case R.id.recordDb:
+                new UploadRoutes().execute();
+                new UploadBusStops().execute();
+                new UploadBind().execute();
+                return true;
+            case R.id.deleteDb:
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        getApplicationContext().getContentResolver().delete(
+                                RouteContract.RouteColumns.ROUTE_URI, null, null);
+
+                    }
+                }).start();
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        getApplicationContext().getContentResolver().delete(
+                                BusStopContract.BusStopColumns.BUS_STOP_URI, null, null);
+
+                    }
+                }).start();
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        getApplicationContext().getContentResolver().delete(
+                                BindContract.BindColumns.BIND_URI, null, null);
+
+                    }
+                }).start();
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        getApplicationContext().getContentResolver().delete(
+                                TimeContract.TimeColumns.TIME_URI, null, null);
+
+                    }
+                }).start();
+
+                Toast.makeText(getApplicationContext(), "Delete Database", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-    }
-
 }

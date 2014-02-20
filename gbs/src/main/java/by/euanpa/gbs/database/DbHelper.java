@@ -17,7 +17,7 @@ import by.euanpa.gbs.database.contracts.TimeContract;
  */
 public class DbHelper extends SQLiteOpenHelper {
     public static final int DB_VERSION = 1;
-    private static final String DB_NAME = "gbs.data.db";
+    private static final String DB_NAME = "gbs.db";
     public static final String ROUTE = "ROUTE";
     public static final String BUS_STOP = "BUS_STOP";
     public static final String TIME = "TIME";
@@ -34,11 +34,11 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String[] TIME_COLUMNS = {
             TimeContract.TimeColumns.TIME_ID, TimeContract.TimeColumns.HOUR,
             TimeContract.TimeColumns.MINUTE, TimeContract.TimeColumns.DAY_TYPE,
-            TimeContract.TimeColumns.TIME_ID};
+            TimeContract.TimeColumns.TIME_BIND_ID};
 
     public static final String[] BIND_COLUMNS = {
             BindContract.BindColumns.BIND_ID, BindContract.BindColumns.BIND_ROUTE_ID,
-            BindContract.BindColumns.BIND_BUS_STOP_ID};
+            BindContract.BindColumns.BIND_BUS_STOP_ID,BindContract.BindColumns.BIND_NEXT_BUS_STOP_ID};
 
     public static final int ONE_INDEX = 0;
     public static final int TWO_INDEX = 1;
@@ -46,28 +46,11 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final int FOUR_INDEX = 3;
     public static final int FIVE_INDEX = 4;
 
-    public static final String CREATE_GBS_DATABASE = "CREATE TABLE "
-            + ROUTE + " (" + ROUTE_COLUMNS[ONE_INDEX]
-            + " INTEGER PRIMARY KEY, " + ROUTE_COLUMNS[TWO_INDEX]
-            + " INTEGER, " + ROUTE_COLUMNS[THREE_INDEX]
-            + " VARCHAR NOT NULL); " + "CREATE TABLE " + BUS_STOP + " (" + BUS_STOP_COLUMNS[ONE_INDEX]
-            + " INTEGER PRIMARY KEY, " + BUS_STOP_COLUMNS[TWO_INDEX]
-            + " VARCHAR NOT NULL, " + BUS_STOP_COLUMNS[THREE_INDEX]
-            + " REAL, " + BUS_STOP_COLUMNS[FOUR_INDEX]
-            + " REAL); " + "CREATE TABLE " + TIME + " (" + TIME_COLUMNS[ONE_INDEX]
-            + " INTEGER PRIMARY KEY, " + TIME_COLUMNS[TWO_INDEX]
-            + " INTEGER, " + TIME_COLUMNS[THREE_INDEX]
-            + " INTEGER, " + TIME_COLUMNS[FOUR_INDEX]
-            + " INTEGER); " + "CREATE TABLE " + BIND + " (" + BIND_COLUMNS[ONE_INDEX]
-            + " INTEGER PRIMARY KEY, " + BIND_COLUMNS[TWO_INDEX]
-            + " INTEGER, " + BIND_COLUMNS[THREE_INDEX]
-            + " INTEGER, " + BIND_COLUMNS[FOUR_INDEX]
-            + " INTEGER);";
 
     public static final String CREATE_ROUTE_TABLE = "CREATE TABLE "
             + ROUTE + " (" + ROUTE_COLUMNS[ONE_INDEX]
             + " INTEGER PRIMARY KEY, " + ROUTE_COLUMNS[TWO_INDEX]
-            + " INTEGER, " + ROUTE_COLUMNS[THREE_INDEX]
+            + " VARCHAR, " + ROUTE_COLUMNS[THREE_INDEX]
             + " VARCHAR NOT NULL);";
 
     public static final String CREATE_BUS_STOP_TABLE = "CREATE TABLE " + BUS_STOP + " (" + BUS_STOP_COLUMNS[ONE_INDEX]
@@ -94,11 +77,11 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String DROP_ROUTE_TABLE = "DROP TABLE IF EXISTS "
             + ROUTE;
     public static final String DROP_BS_TABLE = "DROP TABLE IF EXISTS "
-            + ROUTE;
+            + BUS_STOP;
     public static final String DROP_TIME_TABLE = "DROP TABLE IF EXISTS "
-            + ROUTE;
+            + TIME;
     public static final String DROP_BIND_TABLE = "DROP TABLE IF EXISTS "
-            + ROUTE;
+            + BIND;
 
     public static final String DROP_GBS_DATABASE = DROP_ROUTE_TABLE
             + DROP_BS_TABLE + DROP_TIME_TABLE + DROP_BIND_TABLE;
@@ -121,7 +104,7 @@ public class DbHelper extends SQLiteOpenHelper {
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
-            Log.d(TAG, CREATE_GBS_DATABASE);
+            //Log.d(TAG, CREATE_GBS_DATABASE);
         }
 
     }
@@ -139,53 +122,20 @@ public class DbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public long addRoute(ContentValues values) {
+    public long addItem(ContentValues values, String table) {
         SQLiteDatabase db = getWritableDatabase();
         Log.i(TAG, values.toString());
-        return db.insert(ROUTE, null, values);
+        return db.insert(table, null, values);
     }
 
-    public long addBusStop(ContentValues values) {
-        SQLiteDatabase db = getWritableDatabase();
-        Log.i(TAG, values.toString());
-        return db.insert(BUS_STOP, null, values);
-    }
-
-    public long addTime(ContentValues values) {
-        SQLiteDatabase db = getWritableDatabase();
-        Log.i(TAG, values.toString());
-        return db.insert(TIME, null, values);
-    }
-
-    public long addBind(ContentValues values) {
-        SQLiteDatabase db = getWritableDatabase();
-        Log.i(TAG, values.toString());
-        return db.insert(BIND, null, values);
-    }
-
-    public Cursor getTimes(String[] projection, String selection,
-                           String[] selectionArgs, String sortOrder){
-        SQLiteDatabase db = getWritableDatabase();
-        String sql = "";
-        Cursor cursor = db.rawQuery(sql,selectionArgs);
-        return cursor;
-    }
-
-    public Cursor getRoutes(String[] projection, String selection,
+    public Cursor getItems(String table, String[] projection, String selection,
                             String[] selectionArgs, String sortOrder){
         SQLiteDatabase db = getWritableDatabase();
-        String sql = "";
-        Cursor cursor = db.rawQuery(sql,selectionArgs);
+        Cursor cursor = db.query(table, projection, selection,
+                selectionArgs, null, null, sortOrder);
         return cursor;
     }
 
-    public Cursor getBusStops(String[] projection, String selection,
-                              String[] selectionArgs, String sortOrder){
-        SQLiteDatabase db = getWritableDatabase();
-        String sql = "";
-        Cursor cursor = db.rawQuery(sql,selectionArgs);
-        return cursor;
-    }
 
     public static void bulkInsertTime(DbHelper dbHelper, ContentValues[] values) {
         SQLiteDatabase sqld = dbHelper.getWritableDatabase();
@@ -204,4 +154,16 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
+    public int deleteTable(String table, String selection, String[] selectionArgs) {
+        SQLiteDatabase db = getWritableDatabase();
+        int delete = 0;
+        try {
+            db.beginTransaction();
+            delete  = db.delete(table, selection, selectionArgs);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        return delete;
+    }
 }
