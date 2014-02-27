@@ -166,4 +166,11 @@ public class DbHelper extends SQLiteOpenHelper {
         }
         return delete;
     }
+
+    public Cursor getROBS(String[] selectionArgs) {
+        SQLiteDatabase db = getWritableDatabase();
+        String sql = "";
+        Cursor cursor = db.rawQuery(sql,selectionArgs);
+        return cursor;
+    }
 }

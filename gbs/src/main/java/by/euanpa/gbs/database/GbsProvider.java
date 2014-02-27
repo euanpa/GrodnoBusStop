@@ -14,6 +14,7 @@ import by.euanpa.gbs.ContextHolder;
 import by.euanpa.gbs.database.contracts.BindContract;
 import by.euanpa.gbs.database.contracts.BusStopContract;
 import by.euanpa.gbs.database.contracts.RouteContract;
+import by.euanpa.gbs.database.contracts.RoutesOnBusStopContract;
 import by.euanpa.gbs.database.contracts.TimeContract;
 
 
@@ -29,6 +30,7 @@ public class GbsProvider extends ContentProvider {
     private static final int BUS_STOP_INDEX = 1;
     private static final int TIME_INDEX = 2;
     private static final int BIND_INDEX = 3;
+    private static final int ROUTES_ON_BS_INDEX = 4;
 
     private static final UriMatcher sURIMatcher = new UriMatcher(
             UriMatcher.NO_MATCH);
@@ -46,6 +48,8 @@ public class GbsProvider extends ContentProvider {
                 TimeContract.TimeColumns.TIME_PATH, TIME_INDEX);
         sURIMatcher.addURI(BindContract.AUTHORITY,
                 BindContract.BindColumns.BIND_PATH, BIND_INDEX);
+        sURIMatcher.addURI(RoutesOnBusStopContract.AUTHORITY,
+                RoutesOnBusStopContract.RoutesOnBusStopColumns.ROBS_PATH, ROUTES_ON_BS_INDEX);
 
 
     }
@@ -183,6 +187,10 @@ public class GbsProvider extends ContentProvider {
             case TIME_INDEX:
                 cursor = dbHelper.getItems("TIME", projection,selection,
                         selectionArgs, sortOrder);
+                // cursor.setNotificationUri(getContext().getContentResolver(), uri);
+                break;
+            case ROUTES_ON_BS_INDEX:
+                cursor = dbHelper.getROBS(selectionArgs);
                 // cursor.setNotificationUri(getContext().getContentResolver(), uri);
                 break;
 
