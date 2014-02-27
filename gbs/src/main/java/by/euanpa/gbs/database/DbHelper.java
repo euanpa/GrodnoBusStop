@@ -12,9 +12,6 @@ import by.euanpa.gbs.database.contracts.BusStopContract;
 import by.euanpa.gbs.database.contracts.RouteContract;
 import by.euanpa.gbs.database.contracts.TimeContract;
 
-/**
- * Created by google on 30.01.14.
- */
 public class DbHelper extends SQLiteOpenHelper {
     public static final int DB_VERSION = 1;
     private static final String DB_NAME = "gbs.db";
@@ -38,7 +35,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static final String[] BIND_COLUMNS = {
             BindContract.BindColumns.BIND_ID, BindContract.BindColumns.BIND_ROUTE_ID,
-            BindContract.BindColumns.BIND_BUS_STOP_ID,BindContract.BindColumns.BIND_NEXT_BUS_STOP_ID};
+            BindContract.BindColumns.BIND_BUS_STOP_ID, BindContract.BindColumns.BIND_NEXT_BUS_STOP_ID};
 
     public static final int ONE_INDEX = 0;
     public static final int TWO_INDEX = 1;
@@ -71,7 +68,6 @@ public class DbHelper extends SQLiteOpenHelper {
             + " INTEGER, " + BIND_COLUMNS[THREE_INDEX]
             + " INTEGER, " + BIND_COLUMNS[FOUR_INDEX]
             + " INTEGER);";
-
 
 
     public static final String DROP_ROUTE_TABLE = "DROP TABLE IF EXISTS "
@@ -129,7 +125,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getItems(String table, String[] projection, String selection,
-                            String[] selectionArgs, String sortOrder){
+                           String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.query(table, projection, selection,
                 selectionArgs, null, null, sortOrder);
@@ -159,7 +155,7 @@ public class DbHelper extends SQLiteOpenHelper {
         int delete = 0;
         try {
             db.beginTransaction();
-            delete  = db.delete(table, selection, selectionArgs);
+            delete = db.delete(table, selection, selectionArgs);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();

@@ -1,6 +1,8 @@
 package by.euanpa.gbs;
 
 
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
@@ -9,7 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import by.euanpa.gbs.database.DbHelper;
 import by.euanpa.gbs.database.contracts.BindContract;
 import by.euanpa.gbs.database.contracts.BusStopContract;
 import by.euanpa.gbs.database.contracts.RouteContract;
@@ -30,12 +31,13 @@ public class MainActivity extends SlidingFragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // set the Above View
-        ContextHolder.getInstance().setContext(getApplicationContext()); //change this
-                if (savedInstanceState != null)
+        ContextHolder.getInstance().setContext(getApplicationContext());
+        if (savedInstanceState != null) {
             mContent = getSupportFragmentManager().getFragment(savedInstanceState, "mContent");
-        if (mContent == null)
+        }
+        if (mContent == null) {
             mContent = new BusStopFragment();
+        }
 
         // set the Above View
         setContentView(R.layout.content_frame);
@@ -58,7 +60,7 @@ public class MainActivity extends SlidingFragmentActivity {
         setBehindContentView(R.layout.menu_frame);
         if (savedInstanceState == null) {
 
-            mFrag = (ListFragment)this.getSupportFragmentManager().findFragmentById(R.id.menu_frame);
+            mFrag = (ListFragment) this.getSupportFragmentManager().findFragmentById(R.id.menu_frame);
         }
 
         // customize the SlidingMenu
@@ -84,7 +86,7 @@ public class MainActivity extends SlidingFragmentActivity {
                 .beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();
-        getSlidingMenu().showContent();
+        showContent();
     }
 
     @Override
@@ -98,7 +100,6 @@ public class MainActivity extends SlidingFragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.drop:
-
                 return true;
             case R.id.recordDb:
                 new UploadRoutes().execute();
@@ -106,51 +107,25 @@ public class MainActivity extends SlidingFragmentActivity {
                 new UploadBind().execute();
                 return true;
             case R.id.deleteDb:
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        getApplicationContext().getContentResolver().delete(
-                                RouteContract.RouteColumns.ROUTE_URI, null, null);
-
-                    }
-                }).start();
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        getApplicationContext().getContentResolver().delete(
-                                BusStopContract.BusStopColumns.BUS_STOP_URI, null, null);
-
-                    }
-                }).start();
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        getApplicationContext().getContentResolver().delete(
-                                BindContract.BindColumns.BIND_URI, null, null);
-
-                    }
-                }).start();
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        getApplicationContext().getContentResolver().delete(
-                                TimeContract.TimeColumns.TIME_URI, null, null);
-
-                    }
-                }).start();
-
-                Toast.makeText(getApplicationContext(), "Delete Database", Toast.LENGTH_SHORT).show();
+                ContentResolver contentResolver = getContentResolver();
+                deleteEntity(RouteContract.RouteColumns.ROUTE_URI, contentResolver);
+                deleteEntity(BusStopContract.BusStopColumns.BUS_STOP_URI, contentResolver);
+                deleteEntity(BindContract.BindColumns.BIND_URI, contentResolver);
+                deleteEntity(TimeContract.TimeColumns.TIME_URI, contentResolver);
+                Toast.makeText(this, "Delete Database", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void deleteEntity(final Uri uri, final ContentResolver contentResolver) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                contentResolver.delete(uri, null, null);
+
+            }
+        }).start();
     }
 }

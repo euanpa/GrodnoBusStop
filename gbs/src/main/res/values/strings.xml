@@ -4,10 +4,6 @@
     <string name="app_name">SlideMenu Demo</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-
-    <color name="back">#3d4140</color>
-    <color name="purple_light">#ffffff</color>
-    <color name="purple_dark">#353838</color>
     <string name="menu_1">Bus stop</string>
     <string name="menu_2">Route</string>
     <string name="changing_fragments">Changing Fragments</string>

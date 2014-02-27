@@ -30,9 +30,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.zip.GZIPInputStream;
 
-/**
- * Created by google on 15.02.14.
- */
+import by.euanpa.gbs.utils.IOUtil;
+
 public class HttpManager {
 
     private static HttpManager instance;
@@ -41,8 +40,9 @@ public class HttpManager {
 
     public static final int SO_TIMEOUT = 20000;
 
-    /* Constant encoding for http client. */
     private static final String UTF_8 = "UTF-8";
+    private static final String HEADER_CONTENT_ENCODING = "Content-Encoding";
+    private static final String ENCODING_GZIP = "gzip";
 
     public static final String SERVICE_NAME = "----HTTP_CLIENT_MANAGER----";
 
@@ -63,19 +63,13 @@ public class HttpManager {
 
         // REGISTERS SCHEMES FOR BOTH HTTP AND HTTPS
         SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("http", PlainSocketFactory
-                .getSocketFactory(), 80));
-        final SSLSocketFactory sslSocketFactory = SSLSocketFactory
-                .getSocketFactory();
-        sslSocketFactory
-                .setHostnameVerifier(SSLSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
+        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
+        sslSocketFactory.setHostnameVerifier(SSLSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
         registry.register(new Scheme("https", sslSocketFactory, 443));
-        ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(
-                params, registry);
+        ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params, registry);
         client = new DefaultHttpClient(manager, params);
     }
-
-
 
     public DefaultHttpClient getClient() {
         return client;
@@ -94,6 +88,7 @@ public class HttpManager {
             IOException {
         return client.execute(post, new BasicResponseHandler());
     }
+
     public String loadAsString(String url) throws IOException {
         return loadAsString(new HttpGet(url));
     }
@@ -113,24 +108,22 @@ public class HttpManager {
             HttpResponse response = client.execute(request);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != HttpStatus.SC_OK) {
-                String entityValue = null;
-                entityValue = EntityUtils.toString(response.getEntity());
-                throw new IOException(response.getStatusLine().getReasonPhrase()+" "+entityValue + " " + statusCode);
+                String entityValue = EntityUtils.toString(response.getEntity());
+                throw new IOException(response.getStatusLine().getReasonPhrase() + " " + entityValue + " " + statusCode);
             }
             content = response.getEntity().getContent();
-            Header contentEncoding = response.getFirstHeader("Content-Encoding");
-            if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
+            Header contentEncoding = response.getFirstHeader(HEADER_CONTENT_ENCODING);
+            if (contentEncoding != null && ENCODING_GZIP.equalsIgnoreCase(contentEncoding.getValue())) {
                 reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(content)), 8192);
             } else {
-                reader = new BufferedReader(
-                        new InputStreamReader(content), 8192);
+                reader = new BufferedReader(new InputStreamReader(content), 8192);
             }
             StringBuilder sb = new StringBuilder();
-            String line = null;
+            String line;
             try {
+                String lineSeparator = IOUtil.LINE_SEPARATOR;
                 while ((line = reader.readLine()) != null) {
-                    sb.append(line)
-                            .append(System.getProperty("line.separator"));
+                    sb.append(line).append(System.getProperty(lineSeparator));
                 }
             } catch (IOException e) {
                 throw e;
@@ -141,19 +134,8 @@ public class HttpManager {
         } catch (IOException e) {
             throw e;
         } finally {
-            if (content != null) {
-                try {
-                    content.close();
-                } catch (IOException e) {
-                }
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    // TODO: handle exception
-                }
-            }
+            IOUtil.close(content);
+            IOUtil.close(reader);
         }
     }
 }
