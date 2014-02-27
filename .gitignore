@@ -2,8 +2,7 @@
 /local.properties
 .DS_Store
 /build
-.idea
-.settings
+/.idea
 gbs/build
 
 # built application files
