@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="by.euanpa.gbs.MainActivity" >
+    
+    <item android:id="@+id/recordDb"
+        android:title="Record"
+        android:orderInCategory="100" />
+    <item android:id="@+id/deleteDb"
+        android:title="Delete"
+        android:orderInCategory="100" />
+    <item android:id="@+id/drop"
+        android:title="Drop"
+        android:orderInCategory="100" />
+</menu>
