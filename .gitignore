@@ -1,4 +1,27 @@
 .gradle
 /local.properties
-/.idea/workspace.xml
 .DS_Store
+/build
+.idea
+.settings
+gbs/build
+
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+gbs/bin/
+gbs/gen/
+
+*.iml
+
+.classpath
+.project
+project.properties

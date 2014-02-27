@@ -3,7 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GrodnoBusStop.iml" filepath="$PROJECT_DIR$/GrodnoBusStop.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gbs/gbs.iml" filepath="$PROJECT_DIR$/gbs/gbs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gbs.iml" filepath="$PROJECT_DIR$/gbs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gbs/gbs-gbs.iml" filepath="$PROJECT_DIR$/gbs/gbs-gbs.iml" />
     </modules>
   </component>
 </project>
