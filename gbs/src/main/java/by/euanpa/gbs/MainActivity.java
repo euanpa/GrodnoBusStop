@@ -124,7 +124,6 @@ public class MainActivity extends SlidingFragmentActivity {
             @Override
             public void run() {
                 contentResolver.delete(uri, null, null);
-
             }
         }).start();
     }
